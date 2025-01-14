@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmengiba <pmengiba@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/13 14:29:14 by pmengiba          #+#    #+#             */
-/*   Updated: 2025/01/13 19:49:13 by pmengiba         ###   ########.fr       */
+/*   Created: 2025/01/14 15:34:38 by pmengiba          #+#    #+#             */
+/*   Updated: 2025/01/14 15:34:42 by pmengiba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,12 +18,14 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
+# include <string.h>
 
-char    *get_next_line(int fd);
+char	*get_next_line(int fd);
 char    *ft_strdup(char *s);
 size_t    ft_strlen(char *s);
 char    *ft_substr(char *s, unsigned int start, size_t len);
 char    *ft_strjoin(char *s1, char *s2);
 void    fill_str(char *res, char *s1, char *s2);
+char	*ft_strchr(char *s, int c);
 
 #endif
