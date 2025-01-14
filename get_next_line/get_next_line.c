@@ -30,49 +30,41 @@ static char	*ft_read_and_store(int fd, char *storage)
 		if (bytes_read == -1)
 		{
 			free(buffer);
+			free(storage);
 			return (NULL);
 		}
 		buffer[bytes_read] = '\0';
-		if (!storage)
-			storage = ft_strdup("");
 		temp = storage;
-		storage = ft_strjoin(temp, buffer);
+		storage = ft_strjoin(temp ? temp : "", buffer);
 		free(temp);
 	}
 	free(buffer);
 	return (storage);
 }
 
-static int	ft_get_line_len(char *storage)
-{
-	int	i;
-
-	i = 0;
-	while (storage[i] && storage[i] != '\n')
-		i++;
-	if (storage[i] == '\n')
-		i++;
-	return (i);
-}
-
 static char	*ft_extract_line(char *storage)
 {
 	char	*line;
 	int		i;
-	int		len;
 
-	if (!storage[0])
+	i = 0;
+	if (!storage || !storage[0])
 		return (NULL);
-	len = ft_get_line_len(storage);
-	line = (char *)malloc(sizeof(char) * (len + 1));
+	while (storage[i] && storage[i] != '\n')
+		i++;
+	if (storage[i] == '\n')
+		i++;
+	line = (char *)malloc(sizeof(char) * (i + 1));
 	if (!line)
 		return (NULL);
 	i = 0;
-	while (i < len)
+	while (storage[i] && storage[i] != '\n')
 	{
 		line[i] = storage[i];
 		i++;
 	}
+	if (storage[i] == '\n')
+		line[i++] = '\n';
 	line[i] = '\0';
 	return (line);
 }
@@ -93,7 +85,10 @@ static char	*ft_update_storage(char *storage)
 	}
 	new_storage = malloc(sizeof(char) * (ft_strlen(storage) - i + 1));
 	if (!new_storage)
+	{
+		free(storage);
 		return (NULL);
+	}
 	i++;
 	j = 0;
 	while (storage[i])
