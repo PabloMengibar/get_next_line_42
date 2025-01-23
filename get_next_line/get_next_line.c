@@ -1,101 +1,102 @@
-/* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: pmengiba <pmengiba@student.42malaga.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/13 19:32:59 by pmengiba          #+#    #+#             */
-/*   Updated: 2025/01/14 15:31:40 by pmengiba         ###   ########.fr       */
+/*   Created: 2025/01/22 13:09:17 by pmengiba          #+#    #+#             */
+/*   Updated: 2025/01/23 14:28:37 by pmengiba         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-static char	*ft_set_line(char *line_buffer)
+char	*ft_lilloc(int i)
 {
-	char	*remainder;
-	ssize_t	i;
+	char	*new;
+
+	new = (char *)malloc(sizeof(char) * (i + 2));
+	if (!new)
+		return (NULL);
+	return (new);
+}
+
+void	ft_copy_line(char *new, char *s, int i)
+{
+	int	j;
+
+	j = 0;
+	while (j < i)
+	{
+		new[j] = s[j];
+		j++;
+	}
+	if (s[i] == '\n')
+	{
+		new[j] = '\n';
+		j++;
+	}
+	new[j] = '\0';
+}
+
+char	*ft_set_line(char *s)
+{
+	char	*new;
+	int		i;
 
 	i = 0;
-	while (line_buffer[i] != '\n' && line_buffer[i] != '\0')
+	if (s[i] == 0)
+		return (NULL);
+	while (s[i] && s[i] != '\n')
 		i++;
-	if (line_buffer[i] == '\0')
+	new = ft_lilloc(i);
+	if (!new)
 		return (NULL);
-	remainder = ft_substr(line_buffer, i + 1, ft_strlen(line_buffer) - i);
-	if (*remainder == 0)
+	ft_copy_line(new, s, i);
+	return (new);
+}
+
+char	*ft_buffer(char *line)
+{
+	char	*str;
+	int		i;
+	int		j;
+
+	i = 0;
+	while (line[i] && line[i] != '\n')
+		i++;
+	if (!line[i])
 	{
-		free(remainder);
-		remainder = NULL;
-	}
-	line_buffer[i + 1] = 0;
-	return (remainder);
-}
-
-static char	*ft_concat_remainder(char *remainder, char *buffer, ssize_t bytes)
-{
-	char	*tmp;
-
-	if (!remainder)
-		remainder = ft_strdup("");
-	buffer[bytes] = 0;
-	tmp = remainder;
-	remainder = ft_strjoin(tmp, buffer);
-	free(tmp);
-	return (remainder);
-}
-
-static char	*ft_fill_line(int fd, char *remainder, char *buffer)
-{
-	ssize_t	bytes;
-
-	bytes = 1;
-	while (bytes > 0)
-	{
-		bytes = read(fd, buffer, BUFFER_SIZE);
-		if (bytes == -1)
-		{
-			free(remainder);
-			return (NULL);
-		}
-		else if (bytes == 0)
-			break ;
-		remainder = ft_concat_remainder(remainder, buffer, bytes);
-		if (ft_strchr(buffer, '\n'))
-			break ;
-	}
-	return (remainder);
-}
-
-static char	*ft_create_buffer(void)
-{
-	char	*buffer;
-
-	buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
+		free(line);
 		return (NULL);
-	return (buffer);
+	}
+	str = (char *)malloc(sizeof(char) * (ft_strlen(line) - i + 1));
+	if (!str)
+		return (NULL);
+	i++;
+	j = 0;
+	while (line[i])
+		str[j++] = line[i++];
+	str[j] = '\0';
+	free(line);
+	return (str);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*remainder;
 	char		*line;
-	char		*buffer;
+	static char	*buffer;
 
-	buffer = ft_create_buffer();
-	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0) < 0)
+	if (BUFFER_SIZE <= 0 || fd < 0)
 	{
-		free(remainder);
 		free(buffer);
-		remainder = NULL;
 		buffer = NULL;
 		return (NULL);
 	}
-	line = ft_fill_line(fd, remainder, buffer);
-	free(buffer);
-	if (!line)
+	buffer = ft_bulloc(fd, buffer);
+	if (!buffer)
 		return (NULL);
-	remainder = ft_set_line(line);
+	line = ft_set_line(buffer);
+	buffer = ft_buffer(buffer);
 	return (line);
 }
